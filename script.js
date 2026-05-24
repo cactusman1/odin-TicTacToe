@@ -20,7 +20,7 @@ function gameBoard() {
         if (board[row][column].getValue() === "") {
             board[row][column].mark(player);
         }
-        else console.log("WALLAHI IT IS AN INVALID MOVE");
+        else alert("WALLAHI IT IS AN INVALID MOVE!!!");
     }
 
     // finally the function to print the board. which'll be called
@@ -32,7 +32,18 @@ function gameBoard() {
         console.log(boardWithCellValues);
     };
 
-    return { markCell, printBoard, getBoard }
+    const resetBoard = () => {
+        board.length = 0;
+        for (let i = 0; i < rows; i++) {
+            board[i] = [];
+            for (let j = 0; j < columns; j++) {
+                board[i].push(Cell());
+            }
+        }
+
+    }
+
+    return { markCell, printBoard, getBoard, resetBoard }
 };
 
 /*
@@ -45,11 +56,15 @@ function Cell() {
     const mark = (player) => {
         value = player;
     }
-
+    // For when the restart button is clicked. It will clear thep
+    const clearMark = () => {
+        value = "";
+    }
     const getValue = () => value;
 
     return {
         mark,
+        clearMark,
         getValue,
     };
 }
@@ -70,6 +85,10 @@ function gameController() {
     ]
 
     let activePlayer = players[0];
+
+    const switchToPlayerOne = () => {
+        activePlayer = players [0];
+    }
 
     const switchActivePlayer = () => {
         activePlayer = activePlayer === players[0] ? players[1] : players[0];
@@ -106,39 +125,127 @@ function gameController() {
     }
 
     const tieCondition = (board) => {
-        for(let j = 0; j <= 3; j++){
-            for(let k = 0; k <= 3; k++){
-                if (board[j][k] && !winCondition(board)){
-                    console.log("Tis a tie");
-                } 
+        // This empty array  will take elements of the board that aren't blank/empty.
+        let tieArray = [];
+        for (let j = 0; j < 3; j++) {
+            for (let k = 0; k < 3; k++) {
+                if (board[j][k].getValue() == 'X' || board[j][k].getValue() == 'O') {
+                    tieArray.push(board[j][k].getValue());
+                }
             }
         }
+        // Basically if all cells are marked with X or O
+        // then the length of tieArray should be 9 
+        // If its length is 9 and nobody has won then it is a tie
+        if (tieArray.length == 9 && winCondition(board) == false) {
+            return true;
+        }
+        return false;
     }
 
     const playRound = (row, column) => {
         console.log(`Marking ${getActivePlayer().name}'s cell`);
         board.markCell(row, column, getActivePlayer().mark);
 
-        //This is where i'll check the win condition
+        // I don't necessarily need to log this
+        // but just in case i want to debug, it should be here.
         if (winCondition(board.getBoard())) {
-            console.log(`${getActivePlayer().name} wins`)
+            console.log(`${getActivePlayer().name} wins`);
+            board.printBoard();
             return;
         }
-        else{
-            tieCondition(board.getBoard());
+        else if (tieCondition(board.getBoard())) {
+            console.log("Tis a draw.");
+            board.printBoard();
             return;
         }
-
-
-        switchActivePlayer();
-        printNewRound();
+        else {
+            switchActivePlayer();
+            printNewRound();
+        }
     }
     // initial board
     printNewRound();
 
+    const resetGame = () => {
+        board.resetBoard();
+        switchToPlayerOne();
+
+    }
     return {
-        playRound
+        playRound,
+        getActivePlayer,
+        winCondition,
+        tieCondition,
+        getBoard: board.getBoard,
+        resetGame
     };
 }
+function screenController (){
+    const game = gameController();
+    const playerTurn = document.querySelector('.playerTurn')
+    const boardUI = document.querySelector('.board')
 
-const game = gameController();
+    const updateScreen = () => {
+
+        boardUI.textContent = "";
+
+        const board = game.getBoard();
+        const activePlayer = game.getActivePlayer();
+
+        playerTurn.textContent = `${activePlayer.name}'s turn`;
+
+        board.forEach((row, rowIndex) => {
+            row.forEach((cell, columnIndex) => {
+                const cellButton = document.createElement("button");
+                cellButton.classList.add('.cell');
+
+                cellButton.dataset.row = rowIndex
+                cellButton.dataset.column = columnIndex;
+                cellButton.textContent = cell.getValue();
+                boardUI.appendChild(cellButton);
+            })
+            
+        })
+        
+        if (game.winCondition(board)) {
+            playerTurn.textContent = `${activePlayer.name} wins`;
+            return;
+        }
+        else if (game.winCondition(board)) {
+            playerTurn.textContent = "Tis a draw.";
+            
+            return;
+        }
+    }
+    
+    function clickBoardHandler(e){
+        const clickedRow = e.target.dataset.row;
+        const clickedColumn = e.target.dataset.column;
+        if(!clickedColumn || !clickedRow) return;
+
+        game.playRound(clickedRow, clickedColumn);
+        updateScreen();
+    }
+
+    boardUI.addEventListener("click", clickBoardHandler);
+    const startGame = document.querySelector(".start")
+    startGame.addEventListener('click', () =>{
+        updateScreen();
+    })
+
+    boardUI.addEventListener("click", clickBoardHandler);
+
+    const restartGame = document.querySelector(".restart")
+    restartGame.addEventListener('click', () =>{
+        game.resetGame();
+        updateScreen();
+    })
+    
+
+    return{
+        playerTurn,
+    };
+
+}
+screenController();
