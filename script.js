@@ -84,6 +84,13 @@ function gameController() {
         }
     ]
 
+    const changePlayerOneName = (name) => {
+        players[0].name = name;
+    }
+
+    const changePlayerTwoName = (name) => {
+        players[1].name = name;
+    }
     let activePlayer = players[0];
 
     const switchToPlayerOne = () => {
@@ -170,15 +177,17 @@ function gameController() {
     const resetGame = () => {
         board.resetBoard();
         switchToPlayerOne();
-
     }
+    
     return {
         playRound,
         getActivePlayer,
         winCondition,
         tieCondition,
         getBoard: board.getBoard,
-        resetGame
+        resetGame,
+        changePlayerOneName,
+        changePlayerTwoName
     };
 }
 function screenController (){
@@ -194,6 +203,9 @@ function screenController (){
         const activePlayer = game.getActivePlayer();
 
         playerTurn.textContent = `${activePlayer.name}'s turn`;
+        if(activePlayer.mark === 'X'){
+            playerTurn.style.color = "#ff0a0a";
+        } else playerTurn.style.color = "#0057ff";
 
         board.forEach((row, rowIndex) => {
             row.forEach((cell, columnIndex) => {
@@ -242,10 +254,29 @@ function screenController (){
         updateScreen();
     })
     
+    const input1 = document.querySelector("#playerOne");
+    const playerOneName = document.querySelector(".playerOneName");
+    input1.addEventListener("keydown", (e) =>{
+        if(e.key === "Enter"){
+            e.preventDefault();
+            playerOneName.textContent = e.target.value;
+            game.changePlayerOneName(e.target.value);
+            e.target.value = ""
 
-    return{
-        playerTurn,
-    };
+        }
+    })
+
+    const input2 = document.querySelector("#playerTwo");
+    const playerTwoName = document.querySelector(".playerTwoName");
+    input2.addEventListener("keydown", (e) =>{
+        if(e.key === "Enter"){
+            e.preventDefault();
+            playerTwoName.textContent = e.target.value;
+            game.changePlayerTwoName(e.target.value);
+            e.target.value = "";
+
+        }
+    })
 
 }
 screenController();

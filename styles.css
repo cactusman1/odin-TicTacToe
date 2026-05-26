@@ -1,14 +1,83 @@
 body{
-    background-color: black;
+    background-color: #1c1c1c;
 }
 
 .container{
     display: grid;
-    grid-template-columns: 50px, 1fr, 50px;
-    grid-template-rows: repeat(3,1fr);
+    /* grid-template-columns: 50px, 1fr, 50px; */
+    grid-template-rows: 1fr, 4fr, 1fr;
+}
+
+.sectionOne{
+    display: flex;
+    justify-content: space-around;
+    align-content: center;
+}
+
+.sectionOne > button{
+    height: 80%;
+    width: fit-content;
+    color: #2fff00;
+    background-color: #1c1c1c;
+    align-self: end;
+    border: none;
+    font-weight: bold;
+    font-size: large;
+
+}
+
+.sectionTwo{
+    display: flex;
+    justify-content: space-around;
+    padding: 1.5em;
+    align-content: center;
+}
+
+.sectionOne div:first-child h2:first-child{
+    color: #ff0a0a;
+}
+
+.sectionOne div:last-child h2:first-child{
+    color: #0057ff;
 }
 .playerTurn,h2{
-    color: tomato;
+    text-align: center;
+    color: #faebd7;
+}
+
+.playerOneName{
+    color: #ff0a0a;
+}
+
+.playerTwoName{
+    color: #0057ff;
+}
+
+.playerOneName,.playerTwoName{
+    background-color: #1c1c1c;
+    font-size: larger;
+    font-weight: bold;
+    padding: 10px;
+    
+
+    align-self: center;
+}
+
+.sectionThree{
+    display: flex;
+    justify-content: center;
+    
+}
+.sectionThree button:first-child{
+    height: 80%;
+    width: fit-content;
+    color: 	#ffd500;
+    background-color: #1c1c1c;
+    align-self: end;
+    border: none;
+    font-weight: bold;
+    font-size: large;
+
 }
 
 .board {
@@ -20,7 +89,7 @@ body{
     border: 1px solid black;
     gap: 2px;
     padding: 2px;
-    background-color: tomato;
+    background-color: #1c1c1c;
   }
   
   .cell {
@@ -28,9 +97,9 @@ body{
     justify-content: center;
     align-items: center;
     text-align: center;
-    font-size: 2rem;
+    font-size: 30px;
     border: 1px solid black;
-    background: greenyellow;
+    background: #ca7f68;
     cursor: pointer;
   }
   
